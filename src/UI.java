@@ -191,12 +191,12 @@ public class UI extends JFrame {
         iqBar.setValue(Math.min(iq, 150)); // Show max 150 on progress bar
         iqBar.setString("" + iq);
         sorcerer.setIq(iq);
-        // BIQ (0-100)
+        // BIQ (75-150)
         int biq = 75 + random.nextInt(76);
         biqBar.setValue(Math.min(biq, 150));
         biqBar.setString("" + biq);
         sorcerer.setBiq(biq);
-        // Domain Expansion (20% chance for Yes)
+        // Domain Expansion (20% chance for Yes (only for grade 1 and up))
         boolean de = false;
         if(random.nextFloat() < 0.1 && (gradeComboBox.getSelectedItem().equals("1") || gradeComboBox.getSelectedItem().equals("Special"))){
             domainLabel.setText("Yes");
@@ -205,6 +205,7 @@ public class UI extends JFrame {
             domainLabel.setText("No");
         }
         sorcerer.setDe(de);
+        //Heavenly restriction compensation (Strength)
         if(ce==0){
             speed = 1000;
             speedBar.setValue(speed);
@@ -221,8 +222,20 @@ public class UI extends JFrame {
             biqBar.setString("" + biq);
             sorcerer.setBiq(biq);
         }
+        //Heavenly restriction compensation (Cursed energy)
+        if(strength==0){
+            speed = 1;
+            speedBar.setValue(speed);
+            speedBar.setString("" + speed);
+            sorcerer.setSpeed(speed);
 
+            ce = 199;
+            cursedEnergyBar.setValue(strength);
+            cursedEnergyBar.setString("" + strength);
+            sorcerer.setCe(ce);
+        }
     }
+    // Get values from user input to put into the sorcerer
     private void updateSorcererFromFields() {
         sorcerer.setName(nameField.getText());
         try {
@@ -239,7 +252,6 @@ public class UI extends JFrame {
 
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
-        ArrayList<Sorcerer> sorcerersRuntime = new ArrayList<>();
 
         JButton createButton = new JButton("Create Sorcerer");
         JButton saveButton = new JButton("Save to File");
@@ -252,7 +264,7 @@ public class UI extends JFrame {
         panel.add(loadButton);
         panel.add(fightButton);
         panel.add(clearButton);
-
+        //create a sorcerer into the current field, ready to be saved or changed
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -261,6 +273,7 @@ public class UI extends JFrame {
                 displayCurrent();
             }
         });
+        //save the current sorcerer to a file
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ArrayList<Sorcerer> sorcerers = new ArrayList<>();
@@ -287,7 +300,7 @@ public class UI extends JFrame {
                 JOptionPane.showMessageDialog(null,"Sorcerer saved successfully.");
             }
         });
-
+        //list all sorcerers in the file, the user can choose one to display as the current sorcerer or edit their stats to get a new sorcerer
         loadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ArrayList<Sorcerer> sorcerers = new ArrayList<>();
@@ -301,7 +314,7 @@ public class UI extends JFrame {
                     ex.printStackTrace();
                 }
 
-                // Create list of sorcerer names
+                // Create list of sorcerer names to display in a dialog window
                 String[] names = sorcerers.stream()
                         .map(Sorcerer::getName)
                         .toArray(String[]::new);
@@ -317,7 +330,7 @@ public class UI extends JFrame {
                         JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE
                 );
-
+                //selected sorcerer
                 if (result == JOptionPane.OK_OPTION && list.getSelectedIndex() != -1) {
                     Sorcerer selected = sorcerers.get(list.getSelectedIndex());
                     current = selected;
@@ -346,7 +359,7 @@ public class UI extends JFrame {
                 }
             }
         });
-
+        //clears the current sorcerer
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -371,6 +384,7 @@ public class UI extends JFrame {
 
         return panel;
     }
+    //method to display current sorcerer in textfield
     public void displayCurrent(){
         displayArea.setText(
                 current.getName()+
