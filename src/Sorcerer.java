@@ -1,4 +1,6 @@
-public class Sorcerer {
+import java.io.Serializable;
+
+public class Sorcerer implements Serializable {
     private String name;
     private int age;
     private String grade;

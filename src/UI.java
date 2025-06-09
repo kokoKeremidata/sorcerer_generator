@@ -264,7 +264,7 @@ public class UI extends JFrame {
         });
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("sorcerers.txt"))) {
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("sorcerers.bin",true))) {
                     oos.writeObject(current);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -273,24 +273,26 @@ public class UI extends JFrame {
         loadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ArrayList<Sorcerer> sorcerers = new ArrayList<>();
-                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("sorcerers.txt"))) {
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("sorcerers.bin"))) {
                     while (true) {
                         try {
-                            Sorcerer s = (Sorcerer)ois.readObject();
+                            Sorcerer s = (Sorcerer) ois.readObject();
                             sorcerers.add(s);
+                            System.out.println("aaa");
                         } catch (EOFException ex) {
-                            break;
                         }
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+
                 ArrayList<String> names = new ArrayList<>();
                 for (Sorcerer s : sorcerers) {
                     names.add(s.getName());
                 }
-
-                JList<String> list = new JList<>((ListModel) names);
+                //list
+                JList<String> list = new JList<>(names.toArray(new String[0]));
+                list.setPreferredSize(new Dimension(400, 300));
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
                 int result = JOptionPane.showConfirmDialog(
@@ -304,8 +306,8 @@ public class UI extends JFrame {
                 if (result == JOptionPane.OK_OPTION && list.getSelectedIndex() != -1) {
                     Sorcerer selected = sorcerers.get(list.getSelectedIndex());
                     sorcerer = selected;
-            }
-        }});
+                }
+            }});
 
         clearButton.addActionListener(new ActionListener() {
             @Override
