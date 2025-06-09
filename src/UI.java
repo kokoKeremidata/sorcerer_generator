@@ -91,7 +91,7 @@ public class UI extends JFrame {
         JButton randomTechButton = new JButton("Random Technique");
         randomTechButton.addActionListener(e -> {
 
-            String[] techniques = {"Limitless", "Ten Shadows", "Boogie Woogie"};
+            String[] techniques = {"Limitless", "Ten Shadows", "Boogie Woogie", "Straw Doll", "Shrine", "Ratio", "Idle Transfiguration", "Tool Manipulation", "Construction","Rot","Puppet Manipulation","Cursed Spirit Manipulation", "Immortality","Cloning","Brain Swap","Auspicious Beasts Summon","Inverse","Crow Manipulation","Miracles","Wound Stop","Ice Formation","Love Rendezvous","Judgeman","Contractual Creation","Comedian","CE Discharge","Copy","Private Pure Love Train","Star Rage","Antigravity","Technique Extinguish","Mythical Beast Amber","Heart Catch","Prayer Song","Blood Manipulation","Cursed Speech","Projection Sorcery"};
             cursedTechniqueArea.setText(techniques[random.nextInt(techniques.length)]);
         });
         panel.add(randomTechButton);
@@ -239,16 +239,15 @@ public class UI extends JFrame {
 
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
+        ArrayList<Sorcerer> sorcerersRuntime = new ArrayList<>();
 
         JButton createButton = new JButton("Create Sorcerer");
-        JButton randomButton = new JButton("Generate Random");
         JButton saveButton = new JButton("Save to File");
         JButton loadButton = new JButton("Load from File");
         JButton fightButton = new JButton("Simulate Fight");
         JButton clearButton = new JButton("Clear");
 
         panel.add(createButton);
-        panel.add(randomButton);
         panel.add(saveButton);
         panel.add(loadButton);
         panel.add(fightButton);
@@ -264,34 +263,50 @@ public class UI extends JFrame {
         });
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("sorcerers.bin",true))) {
-                    oos.writeObject(current);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }});
-        loadButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
                 ArrayList<Sorcerer> sorcerers = new ArrayList<>();
+
+                // Load existing sorcerers
                 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("sorcerers.bin"))) {
-                    while (true) {
-                        try {
-                            Sorcerer s = (Sorcerer) ois.readObject();
-                            sorcerers.add(s);
-                            System.out.println("aaa");
-                        } catch (EOFException ex) {
-                        }
-                    }
+                    sorcerers = (ArrayList<Sorcerer>) ois.readObject();
+                } catch (FileNotFoundException ex) {
+                    // file doesn't exist yet
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
 
-                ArrayList<String> names = new ArrayList<>();
-                for (Sorcerer s : sorcerers) {
-                    names.add(s.getName());
+                // Add the current sorcerer to the list
+                sorcerers.add(current);
+
+                // Save entire list
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("sorcerers.bin"))) {
+                    oos.writeObject(sorcerers);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                //list
-                JList<String> list = new JList<>(names.toArray(new String[0]));
+
+                JOptionPane.showMessageDialog(null,"Sorcerer saved successfully.");
+            }
+        });
+
+        loadButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Sorcerer> sorcerers = new ArrayList<>();
+
+                // Load existing sorcerers if file exists
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("sorcerers.bin"))) {
+                    sorcerers = (ArrayList<Sorcerer>) ois.readObject();
+                } catch (FileNotFoundException ex) {
+                    // file doesn't exist yet, no problem
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                // Create list of sorcerer names
+                String[] names = sorcerers.stream()
+                        .map(Sorcerer::getName)
+                        .toArray(String[]::new);
+
+                JList<String> list = new JList<>(names);
                 list.setPreferredSize(new Dimension(400, 300));
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -305,9 +320,32 @@ public class UI extends JFrame {
 
                 if (result == JOptionPane.OK_OPTION && list.getSelectedIndex() != -1) {
                     Sorcerer selected = sorcerers.get(list.getSelectedIndex());
-                    sorcerer = selected;
+                    current = selected;
+
+                    displayCurrent();
+                    nameField.setText(current.getName());
+                    ageField.setText(Integer.toString(current.getAge()));
+                    gradeComboBox.setSelectedItem(current.getGrade());
+                    cursedTechniqueArea.setText(current.getCt());
+                    cursedEnergyBar.setValue(current.getCe());
+                    cursedEnergyBar.setString("" + current.getCe());
+                    speedBar.setValue(current.getSpeed());
+                    speedBar.setString("" + current.getSpeed());
+                    strengthBar.setValue(current.getStrength());
+                    strengthBar.setString("" + current.getStrength());
+                    iqBar.setValue(current.getIq());
+                    iqBar.setString("" + current.getIq());
+                    biqBar.setValue(current.getBiq());
+                    biqBar.setString("" + current.getBiq());
+                    if(current.isDe())
+                        domainLabel.setText("Yes");
+                    else
+                        domainLabel.setText("No");
+                    personalityComboBox.setSelectedItem(current.getPersonality());
+                    System.out.println("Selected sorcerer: " + current.getName());
                 }
-            }});
+            }
+        });
 
         clearButton.addActionListener(new ActionListener() {
             @Override
