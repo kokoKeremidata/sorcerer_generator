@@ -1,4 +1,6 @@
+import javax.sound.sampled.*;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,12 +18,18 @@ public class UI extends JFrame {
     private JProgressBar strengthBar;
     private JProgressBar iqBar;
     private JProgressBar biqBar;
+    private JLabel nameLabel;
+    private JLabel ageLabel;
+    private JLabel gradeLabel;
+    private JLabel cursedTechniqueLabel;
     private JLabel cursedEnergyLabel;
     private JLabel speedLabel;
     private JLabel strengthLabel;
     private JLabel iqLabel;
     private JLabel biqLabel;
-    private JLabel domainLabel;
+    private JLabel domainLabel1;
+    private JLabel domainLabel2;
+    private JLabel personalityLabel;
     private JComboBox<String> personalityComboBox;
     private JTextArea cursedTechniqueArea;
     private Sorcerer sorcerer = new Sorcerer("",0,"","",0,0,0,0,0,false,"");
@@ -61,18 +69,27 @@ public class UI extends JFrame {
     private JPanel createInputPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, 2, 5, 5));
-        panel.setBorder(BorderFactory.createTitledBorder("Sorcerer Attributes"));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                        BorderFactory.createEtchedBorder(),
+                        "Sorcerer Attributes",
+                        TitledBorder.LEADING,
+                        TitledBorder.TOP,
+                        new Font("Serif", Font.BOLD, 14),
+                        Theme.GOLD));
         panel.setPreferredSize(new Dimension(350, 600));
         Theme.stylePanel(panel);
 
         // Name
-        panel.add(new JLabel("Name:"));
+        panel.add(nameLabel = new JLabel("Name:",SwingConstants.CENTER));
+        Theme.styleLabel(nameLabel);
         nameField = new JTextField();
         panel.add(nameField);
         sorcerer.setName(nameField.getText());
         Theme.styleTextField(nameField);
+
         // Age
-        panel.add(new JLabel("Age:"));
+        panel.add(ageLabel = new JLabel("Age:",SwingConstants.CENTER));
+        Theme.styleLabel(ageLabel);
         ageField = new JTextField();
         panel.add(ageField);
         try{
@@ -81,7 +98,8 @@ public class UI extends JFrame {
         Theme.styleTextField(ageField);
 
         // Grade
-        panel.add(new JLabel("Grade:"));
+        panel.add(gradeLabel = new JLabel("Grade:",SwingConstants.CENTER));
+        Theme.styleLabel(gradeLabel);
         String[] grades = {"4", "3", "2", "1", "Special"};
         gradeComboBox = new JComboBox<>(grades);
         panel.add(gradeComboBox);
@@ -89,7 +107,8 @@ public class UI extends JFrame {
         Theme.styleComboBox(gradeComboBox);
 
         // Cursed Technique
-        panel.add(new JLabel("Cursed Technique:"));
+        panel.add(cursedTechniqueLabel = new JLabel("Cursed Technique:",SwingConstants.CENTER));
+        Theme.styleLabel(cursedTechniqueLabel);
         JPanel techniquePanel = new JPanel(new BorderLayout());
         cursedTechniqueArea = new JTextArea(2, 10);
         JScrollPane scrollPane = new JScrollPane(cursedTechniqueArea);
@@ -111,46 +130,54 @@ public class UI extends JFrame {
         Theme.styleButton(randomTechButton);
 
         // Cursed Energy
-        panel.add(new JLabel("Cursed Energy (0-100):"));
+        panel.add(cursedEnergyLabel = new JLabel("Cursed Energy (0-100):",SwingConstants.CENTER));
+        Theme.styleLabel(cursedEnergyLabel);
         cursedEnergyBar = createProgressBar(0, 100, 50);
         panel.add(cursedEnergyBar);
         Theme.styleBar(cursedEnergyBar);
 
         // Speed
-        panel.add(new JLabel("Speed (0-100):"));
+        panel.add(speedLabel = new JLabel("Speed (0-100):",SwingConstants.CENTER));
+        Theme.styleLabel(speedLabel);
         speedBar = createProgressBar(0, 100, 50);
         panel.add(speedBar);
         Theme.styleBar(speedBar);
 
         // Strength
-        panel.add(new JLabel("Strength (0-100):"));
+        panel.add(strengthLabel = new JLabel("Strength (0-100):",SwingConstants.CENTER));
+        Theme.styleLabel(strengthLabel);
         strengthBar = createProgressBar(0, 100, 50);
         panel.add(strengthBar);
         Theme.styleBar(strengthBar);
 
         // IQ (special handling for 530000)
-        panel.add(new JLabel("IQ (75-150):"));
+        panel.add(iqLabel = new JLabel("IQ (75-150):",SwingConstants.CENTER));
+        Theme.styleLabel(iqLabel);
         iqBar = createProgressBar(75, 150, 100);
         panel.add(iqBar);
         Theme.styleBar(iqBar);
 
         // BIQ
-        panel.add(new JLabel("Battle IQ (75-150):"));
+        panel.add(biqLabel = new JLabel("Battle IQ (75-150):",SwingConstants.CENTER));
+        Theme.styleLabel(biqLabel);
         biqBar = createProgressBar(75, 150, 100);
         panel.add(biqBar);
         Theme.styleBar(biqBar);
 
         // Domain Expansion
-        panel.add(new JLabel("Domain Expansion:"));
+        panel.add(domainLabel1 = new JLabel("Domain Expansion:",SwingConstants.CENTER));
+        Theme.styleLabel(domainLabel1);
         JPanel domainPanel = new JPanel();
-        domainLabel = new JLabel("No", SwingConstants.RIGHT);
-        domainPanel.add(domainLabel);
+        domainLabel2 = new JLabel("No", SwingConstants.RIGHT);
+        Theme.styleLabel(domainLabel2);
+        domainPanel.add(domainLabel2);
         panel.add(domainPanel);
         Theme.stylePanel(domainPanel);
 
 
         // Personality
-        panel.add(new JLabel("Personality:"));
+        panel.add(personalityLabel = new JLabel("Personality:",SwingConstants.CENTER));
+        Theme.styleLabel(personalityLabel);
         String[] personalities = {
                 "Calm", "Aggressive", "Playful", "Serious",
                 "Sadistic", "Nervous", "Confident", "Lazy"
@@ -221,10 +248,10 @@ public class UI extends JFrame {
         // Domain Expansion (20% chance for Yes (only for grade 1 and up))
         boolean de = false;
         if(random.nextFloat() < 0.1 && (gradeComboBox.getSelectedItem().equals("1") || gradeComboBox.getSelectedItem().equals("Special"))){
-            domainLabel.setText("Yes");
+            domainLabel2.setText("Yes");
             de=true;
         }else{
-            domainLabel.setText("No");
+            domainLabel2.setText("No");
         }
         sorcerer.setDe(de);
         //Heavenly restriction compensation (Strength)
@@ -243,6 +270,15 @@ public class UI extends JFrame {
             biqBar.setValue(biq);
             biqBar.setString("" + biq);
             sorcerer.setBiq(biq);
+
+            boolean result = Math.random() < 0.5;
+            String filename;
+            if (result) {
+                filename = "toji";
+            } else {
+                filename = "maki";
+            }
+            playMedia(filename);
         }
         //Heavenly restriction compensation (Cursed energy)
         if(strength==0){
@@ -397,9 +433,9 @@ public class UI extends JFrame {
                     biqBar.setValue(current.getBiq());
                     biqBar.setString("" + current.getBiq());
                     if(current.isDe())
-                        domainLabel.setText("Yes");
+                        domainLabel2.setText("Yes");
                     else
-                        domainLabel.setText("No");
+                        domainLabel2.setText("No");
                     personalityComboBox.setSelectedItem(current.getPersonality());
                     System.out.println("Selected sorcerer: " + current.getName());
                 }
@@ -419,7 +455,13 @@ public class UI extends JFrame {
 
     private JPanel createDisplayPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Current Sorcerer"));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "Sorcerer Attributes",
+                TitledBorder.LEADING,
+                TitledBorder.TOP,
+                new Font("Serif", Font.BOLD, 14),
+                Theme.GOLD));
 
         displayArea = new JTextArea();
         displayArea.setEditable(false);
@@ -447,6 +489,32 @@ public class UI extends JFrame {
                         "\nDE: "+current.isDe()+
                         "\nPersonality: "+current.getPersonality());
     }
+    public static void playMedia(String filename) {
+        Clip clip = null;
+        try {
+            //find and read audio
+            File audioFile = new File("media/" + filename + ".wav");
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            //start
+            clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+            //volume control
+            FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            volumeControl.setValue(-10.0f);
+            //read image;
+            Theme.styleDialog();
+            JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon("media/" + filename + ".png")),"",JOptionPane.PLAIN_MESSAGE);
+
+            //stop after closing
+            clip.stop();
+            clip.close();
+
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new UI());
     }
