@@ -26,6 +26,8 @@ public class UI extends JFrame {
     private JTextArea cursedTechniqueArea;
     private Sorcerer sorcerer = new Sorcerer("",0,"","",0,0,0,0,0,false,"");
 
+
+
     // Display area
     private JTextArea displayArea;
     private Random random;
@@ -35,6 +37,7 @@ public class UI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 700);
         setLayout(new BorderLayout());
+        getContentPane().setBackground(Theme.DARK_PURPLE);
 
         random = new Random();
 
@@ -48,6 +51,10 @@ public class UI extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
         add(displayPanel, BorderLayout.CENTER);
 
+        Theme.stylePanel(inputPanel);
+        Theme.stylePanel(buttonPanel);
+        Theme.stylePanel(displayPanel);
+
         setVisible(true);
     }
 
@@ -56,13 +63,14 @@ public class UI extends JFrame {
         panel.setLayout(new GridLayout(0, 2, 5, 5));
         panel.setBorder(BorderFactory.createTitledBorder("Sorcerer Attributes"));
         panel.setPreferredSize(new Dimension(350, 600));
+        Theme.stylePanel(panel);
 
         // Name
         panel.add(new JLabel("Name:"));
         nameField = new JTextField();
         panel.add(nameField);
         sorcerer.setName(nameField.getText());
-
+        Theme.styleTextField(nameField);
         // Age
         panel.add(new JLabel("Age:"));
         ageField = new JTextField();
@@ -70,6 +78,7 @@ public class UI extends JFrame {
         try{
             sorcerer.setAge(Integer.parseInt(ageField.getText()));
         }catch(Exception e){}
+        Theme.styleTextField(ageField);
 
         // Grade
         panel.add(new JLabel("Grade:"));
@@ -77,6 +86,7 @@ public class UI extends JFrame {
         gradeComboBox = new JComboBox<>(grades);
         panel.add(gradeComboBox);
         sorcerer.setGrade(gradeComboBox.getSelectedItem().toString());
+        Theme.styleComboBox(gradeComboBox);
 
         // Cursed Technique
         panel.add(new JLabel("Cursed Technique:"));
@@ -85,6 +95,8 @@ public class UI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(cursedTechniqueArea);
         techniquePanel.add(scrollPane, BorderLayout.CENTER);
         panel.add(techniquePanel);
+        Theme.styleTextArea(cursedTechniqueArea);
+        Theme.styleScroll(scrollPane);
 
         // Random Technique Button (below the text field)
         panel.add(new JLabel("")); // Empty label for spacing
@@ -96,31 +108,37 @@ public class UI extends JFrame {
         });
         panel.add(randomTechButton);
         sorcerer.setCt(cursedTechniqueArea.getText());
+        Theme.styleButton(randomTechButton);
 
         // Cursed Energy
         panel.add(new JLabel("Cursed Energy (0-100):"));
         cursedEnergyBar = createProgressBar(0, 100, 50);
         panel.add(cursedEnergyBar);
+        Theme.styleBar(cursedEnergyBar);
 
         // Speed
         panel.add(new JLabel("Speed (0-100):"));
         speedBar = createProgressBar(0, 100, 50);
         panel.add(speedBar);
+        Theme.styleBar(speedBar);
 
         // Strength
         panel.add(new JLabel("Strength (0-100):"));
         strengthBar = createProgressBar(0, 100, 50);
         panel.add(strengthBar);
+        Theme.styleBar(strengthBar);
 
         // IQ (special handling for 530000)
         panel.add(new JLabel("IQ (75-150):"));
         iqBar = createProgressBar(75, 150, 100);
         panel.add(iqBar);
+        Theme.styleBar(iqBar);
 
         // BIQ
         panel.add(new JLabel("Battle IQ (75-150):"));
         biqBar = createProgressBar(75, 150, 100);
         panel.add(biqBar);
+        Theme.styleBar(biqBar);
 
         // Domain Expansion
         panel.add(new JLabel("Domain Expansion:"));
@@ -128,6 +146,8 @@ public class UI extends JFrame {
         domainLabel = new JLabel("No", SwingConstants.RIGHT);
         domainPanel.add(domainLabel);
         panel.add(domainPanel);
+        Theme.stylePanel(domainPanel);
+
 
         // Personality
         panel.add(new JLabel("Personality:"));
@@ -138,9 +158,10 @@ public class UI extends JFrame {
         personalityComboBox = new JComboBox<>(personalities);
         panel.add(personalityComboBox);
         sorcerer.setPersonality(personalityComboBox.getSelectedItem().toString());
+        Theme.styleComboBox(personalityComboBox);
 
         // Randomize All Button (only randomizes stats, not grade/personality)
-        panel.add(new JLabel("Randomize Stats:"));
+        panel.add(new JLabel(""));
         JButton randomizeStatsButton = new JButton("Randomize Stats");
         randomizeStatsButton.addActionListener(new ActionListener() {
             @Override
@@ -149,6 +170,7 @@ public class UI extends JFrame {
             }
         });
         panel.add(randomizeStatsButton);
+        Theme.styleButton(randomizeStatsButton);
 
         return panel;
     }
@@ -248,22 +270,27 @@ public class UI extends JFrame {
         sorcerer.setPersonality(personalityComboBox.getSelectedItem().toString());
     }
     private Sorcerer current;
+
     private JPanel createButtonPanel() {
 
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
 
-        JButton createButton = new JButton("Create Sorcerer");
-        JButton saveButton = new JButton("Save to File");
-        JButton loadButton = new JButton("Load from File");
-        JButton fightButton = new JButton("Simulate Fight");
-        JButton clearButton = new JButton("Clear");
+        JButton createButton = new JButton(" Create Sorcerer ");
+        JButton saveButton = new JButton(" Save to File ");
+        JButton loadButton = new JButton(" Load from File ");
+        JButton clearButton = new JButton(" Clear ");
 
         panel.add(createButton);
         panel.add(saveButton);
         panel.add(loadButton);
-        panel.add(fightButton);
         panel.add(clearButton);
+
+        Theme.styleButton(createButton);
+        Theme.styleButton(saveButton);
+        Theme.styleButton(loadButton);
+        Theme.styleButton(clearButton);
+
         //create a sorcerer into the current field, ready to be saved or changed
         createButton.addActionListener(new ActionListener() {
             @Override
@@ -276,6 +303,19 @@ public class UI extends JFrame {
         //save the current sorcerer to a file
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // First check if current exists
+                Theme.styleDialog();
+                if(current == null){
+                    JOptionPane.showMessageDialog(null, "Please create a sorcerer first.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Then check if name is empty
+                if(current.getName()==null || current.getName().trim().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Please name the sorcerer first!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 ArrayList<Sorcerer> sorcerers = new ArrayList<>();
 
                 // Load existing sorcerers
@@ -283,6 +323,7 @@ public class UI extends JFrame {
                     sorcerers = (ArrayList<Sorcerer>) ois.readObject();
                 } catch (FileNotFoundException ex) {
                     // file doesn't exist yet
+                    JOptionPane.showMessageDialog(null,"File not found.","Error",JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -293,11 +334,10 @@ public class UI extends JFrame {
                 // Save entire list
                 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("sorcerers.bin"))) {
                     oos.writeObject(sorcerers);
+                    JOptionPane.showMessageDialog(null, "Sorcerer saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
-                JOptionPane.showMessageDialog(null,"Sorcerer saved successfully.");
             }
         });
         //list all sorcerers in the file, the user can choose one to display as the current sorcerer or edit their stats to get a new sorcerer
@@ -316,20 +356,26 @@ public class UI extends JFrame {
 
                 // Create list of sorcerer names to display in a dialog window
                 String[] names = sorcerers.stream()
+                        .filter(Objects::nonNull)
                         .map(Sorcerer::getName)
+                        .filter(Objects::nonNull)
                         .toArray(String[]::new);
 
                 JList<String> list = new JList<>(names);
                 list.setPreferredSize(new Dimension(400, 300));
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                list.setBackground(Theme.LAVENDER);
+                Theme.styleDialog();
+                JScrollPane scrollPane = new JScrollPane(list);
+                Theme.styleScroll(scrollPane);
 
                 int result = JOptionPane.showConfirmDialog(
-                        null,
-                        new JScrollPane(list),
+                        null,scrollPane,
                         "Select Sorcerer",
                         JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE
                 );
+
                 //selected sorcerer
                 if (result == JOptionPane.OK_OPTION && list.getSelectedIndex() != -1) {
                     Sorcerer selected = sorcerers.get(list.getSelectedIndex());
@@ -379,6 +425,8 @@ public class UI extends JFrame {
         displayArea.setEditable(false);
         displayArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         JScrollPane scrollPane = new JScrollPane(displayArea);
+        Theme.styleTextArea(displayArea);
+        Theme.styleScroll(scrollPane);
 
         panel.add(scrollPane, BorderLayout.CENTER);
 
